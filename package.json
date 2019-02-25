@@ -1,0 +1,30 @@
+{
+  "name": "strings",
+  "version": "1.0.0",
+  "description": "network for musicians",
+  "main": "server.js",
+  "scripts": {
+    "client-install": "npm install --prefix Strings",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm run client --prefix Strings",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "Ambareesh",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "concurrently": "^4.1.0",
+    "express": "^4.16.4",
+    "gravatar": "^1.8.0",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.4.7",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
