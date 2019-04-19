@@ -1,12 +1,12 @@
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { createMaterialTopTabNavigator, createAppContainer } from 'react-navigation';
+import { Text, View } from 'react-native';
+import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
 class HomeScreen extends React.Component {
   render() {
     return (
-      <View style={styles.tabStyle}>
-        <Text>Solo</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Home!</Text>
       </View>
     );
   }
@@ -15,26 +15,16 @@ class HomeScreen extends React.Component {
 class SettingsScreen extends React.Component {
   render() {
     return (
-      <View style={styles.tabStyle}>
-        <Text>Bands</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Settings!</Text>
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  tabStyle: {
-    flex: 1,
-    justifyContent: 'center', 
-    alignItems: 'center',
-  }
+const TabNavigator = createBottomTabNavigator({
+  Home: { screen: HomeScreen },
+  Settings: { screen: SettingsScreen },
 });
-
-const TabNavigator = createMaterialTopTabNavigator({
-  Solo: HomeScreen,
-  Bands: SettingsScreen,
-}
-);
-
 
 export default createAppContainer(TabNavigator);

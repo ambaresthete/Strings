@@ -6,10 +6,28 @@ const ProfileSchema = new Schema({
      type: Schema.Types.ObjectId,
      ref: 'users'
    },
+   displaypic: {
+     type: String
+   },
+   location: {
+     latitude: {
+       type: Number
+     },
+     longitude: {
+       type: Number
+     }
+   },
+   contact: {
+     type: String,
+     required: true
+   },
    handle: {
      type: String,
      required: true,
      max: 40
+   },
+   role: {
+     type: String
    },
    status: {
     type: String
@@ -50,6 +68,17 @@ const ProfileSchema = new Schema({
        }
      }
    ],
+   music: [
+     {
+       title:{
+        type: String,
+        required: true
+       },
+       sound:{
+         type: String
+       }
+     }
+   ],
    education: [
      {
        college:{
@@ -80,8 +109,8 @@ const ProfileSchema = new Schema({
        }
      }
    ],
-   social: {
-     youtube: {
+  social: {
+    youtube: {
        type: String
      },
      twitter: {
@@ -92,8 +121,8 @@ const ProfileSchema = new Schema({
      },
      instagram: {
        type: String
-     }
-   },
+     },
+    },
    date: {
      type: Date,
      default: Date.now
@@ -101,4 +130,4 @@ const ProfileSchema = new Schema({
 });
 
 
-module.exports = Profile = mongoose.model('profile', ProfileSchema);
+module.exports = Profile = mongoose.model('profiles', ProfileSchema);

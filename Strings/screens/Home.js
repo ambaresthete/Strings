@@ -1,22 +1,24 @@
 import React from 'react';
 import { StyleSheet, View, ImageBackground, TouchableOpacity, Text } from 'react-native';
+import { Button } from 'react-native-paper';
 
 
 export default class Home extends React.Component {
   render() {
-    const { navigate } = this.props.navigation;
+    const { push } = this.props.navigation;
     return (
-        
-        <ImageBackground
-          source={require('../assets/home.jpg')}
-          style={styles.image}
+      <ImageBackground
+        source={require("../assets/home.jpg")}
+        style={styles.image}
+      >
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={styles.buttonStyle}
+          onPress={() => push("Join")}
         >
-        <View style={styles.button}>
-        <TouchableOpacity style={styles.buttonStyle} onPress={() => navigate('Join')}>
-        <Text style={styles.textStyle}>Get Started</Text>
-        </TouchableOpacity> 
-        </View>
-        </ImageBackground>
+          <Text style={styles.btStyle}>Get Started</Text>
+        </TouchableOpacity>
+      </ImageBackground>
     );
   }
 }
@@ -29,28 +31,22 @@ const styles = StyleSheet.create({
     flex: 1,
     height: null,
     width: null,
-    resizeMode: 'cover'
-  },
-  button: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    
+    resizeMode: "cover"
   },
   buttonStyle: {
-    position: 'absolute',
+    position: "absolute",
     top: 500,
     left: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: 150,
     height: 50,
-    backgroundColor: '#EAB31A',
-    borderRadius: 20, 
+    backgroundColor: "#EAB31A",
+    borderRadius: 20
   },
-  textStyle: {
-    fontSize: 16,
-    fontFamily: 'Roboto' 
+  btStyle: {
+    fontSize: 18,
+    fontFamily: "sans-serif",
+    color: 'black'
   }
 });

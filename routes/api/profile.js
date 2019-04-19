@@ -2,11 +2,64 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const passport = require('passport');
+const multer = require('multer');
+const path = require('path');
+
+const storageI = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, path.join(__dirname, '/uploads/'));
+    
+  },
+  filename: function(req, file, cb) {
+    cb(null, new Date().toISOString().replace(/:/g, '_').toLowerCase() + file.originalname);
+  }
+});
+
+const storageS = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, path.join(__dirname, '../../Strings/android/app/src/main/res/raw/'));
+    
+  },
+  filename: function(req, file, cb) {
+    cb(null, 'a' + file.originalname.replace(/[\W,' ']+/g, '_').toLowerCase() + '.mp3');
+  }
+});
+
+
+const fileFilterI = (req, file, cb) => {
+  // reject a file
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const fileFilterS = (req, file, cb) => {
+  // reject a file
+  if (file.mimetype === 'audio/mp3' || file.mimetype === 'audio/mpeg') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const uploadI = multer({
+  storage: storageI,
+  fileFilter: fileFilterI
+});
+
+const uploadS = multer({
+  storage: storageS,
+  fileFilter: fileFilterS
+});
 
 // load validation
 const validateProfileInput = require('../../validation/profile');
 const validateExperienceInput = require('../../validation/experience');
 const validateEducationInput = require('../../validation/education');
+const validateMusicInput = require('../../validation/music');
+
 
 // load models
 const Profile = require('../../models/Profile');
@@ -23,7 +76,7 @@ router.get('/', passport.authenticate('jwt', { session: false}), (req, res) => {
   const errors = {};
 
   Profile.findOne({ user: req.user.id})
-    .populate('user',['name','avatar'])
+    .populate('user',['name','email'])
     .then(profile => {
       if(!profile) {
         errors.noprofile = "There is no profile for this user";
@@ -41,7 +94,7 @@ router.get('/all', (req, res) => {
   const errors = {};
 
   Profile.find()
-    .populate('user', ['name', 'avatar'])
+    .populate('user', ['name', 'email'])
     .then(profiles => {
       if (!profiles) {
         errors.noprofile = 'There are no profiles';
@@ -60,7 +113,7 @@ router.get('/handle/:handle', (req, res) => {
   const errors = {};
 
   Profile.findOne({ handle: req.params.handle })
-    .populate('user', ['name', 'avatar'])
+    .populate('user', ['name', 'email'])
     .then(profile => {
       if (!profile) {
         errors.noprofile = 'There is no profile for this user';
@@ -79,7 +132,7 @@ router.get('/user/:user_id', (req, res) => {
   const errors = {};
 
   Profile.findOne({ user: req.params.user_id })
-    .populate('user', ['name', 'avatar'])
+    .populate('user', ['name', 'email'])
     .then(profile => {
       if (!profile) {
         errors.noprofile = 'There is no profile for this user';
@@ -96,7 +149,7 @@ router.get('/user/:user_id', (req, res) => {
 // post
 // api/profile
 // private
-router.post('/', passport.authenticate('jwt', { session: false}), (req, res) => {
+router.post('/',uploadI.single('displaypic'), passport.authenticate('jwt', { session: false}), (req, res) => {
   
   const { errors, isValid } = validateProfileInput(req.body);
 
@@ -110,8 +163,16 @@ router.post('/', passport.authenticate('jwt', { session: false}), (req, res) => 
   const profileFields = {}; 
   profileFields.user = req.user.id;
   if(req.body.handle) profileFields.handle = req.body.handle;
+  if(req.body.contact) profileFields.contact = req.body.contact;
+  if(req.file) profileFields.displaypic = req.file.filename;
   if (req.body.bio) profileFields.bio = req.body.bio;
+  if (req.body.role) profileFields.role = req.body.role;
   if (req.body.status) profileFields.status = req.body.status;
+
+  profileFields.location = {};
+  if (req.body.latitude) profileFields.location.latitude = req.body.latitude;
+  if (req.body.longitude) profileFields.location.longitude = req.body.longitude;
+
   // Skills - Spilt into array
   if (typeof req.body.skills !== 'undefined') {
     profileFields.skills = req.body.skills.split(',');
@@ -184,6 +245,34 @@ router.post(
   }
 );
 
+
+router.post(
+  '/music', uploadS.single('sound'),
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateMusicInput(req.body);
+
+    // Check Validation
+    if (!isValid) {
+      // Return any errors with 400 status
+      return res.status(400).json(errors);
+    }
+
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      
+      const newMu = {
+        title: req.body.title,
+        sound: req.file.filename
+      };
+
+      // Add to exp array
+      profile.music.unshift(newMu);
+
+      profile.save().then(profile => res.json(profile));
+    });
+  }
+);
+
 // @route   POST api/profile/education
 // @desc    Add education to profile
 // @access  Private
@@ -234,6 +323,27 @@ router.delete(
 
         // Splice out of array
         profile.experience.splice(removeIndex, 1);
+
+        // Save
+        profile.save().then(profile => res.json(profile));
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
+router.delete(
+  '/music/:mu_id',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        // Get remove index
+        const removeIndex = profile.experience
+          .map(item => item.id)
+          .indexOf(req.params.mu_id);
+
+        // Splice out of array
+        profile.music.splice(removeIndex, 1);
 
         // Save
         profile.save().then(profile => res.json(profile));

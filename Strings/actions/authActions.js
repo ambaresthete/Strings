@@ -8,20 +8,22 @@ import { StackActions, NavigationActions } from 'react-navigation';
 // Register User
 export const registerUser = (userData,navigation) => dispatch => {
   
-  axios.post('http://192.168.0.5:5000/api/users/register', userData)
+  axios.post('http://192.168.43.175:5000/api/users/register', userData)
       .then(res => navigation.navigate("Login"))
-      .catch(err => 
+      .catch(err =>{ 
         dispatch({
           type: GET_ERRORS,
           payload: err.response.data
-        })
+        });
+        console.log("register catch",err);
+      }
       );
 };
 
 // Login User
 export const loginUser = (userData,navigate) => dispatch => {
   axios
-    .post('http://192.168.0.5:5000/api/users/login', userData)
+    .post('http://192.168.43.175:5000/api/users/login', userData)
     .then(res => {
       // Save to localStorage
       const { token } = res.data;
@@ -33,19 +35,18 @@ export const loginUser = (userData,navigate) => dispatch => {
       const decoded = jwt_decode(token);
       // Set current user
       dispatch(setCurrentUser(decoded));
-
-      const resetAction = StackActions.reset({
-        index: 0,
-        actions: [NavigationActions.navigate({ routeName: 'Drawer' })],
-      });
-      navigate.dispatch(resetAction);  
+    
+      navigate.navigate('App');  
 
     })
-    .catch(err =>
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
-      })
+      });
+      console.log("login catch",err);
+    }
+
     );
 };
 
@@ -67,5 +68,5 @@ export const logoutUser = (navigate) => dispatch => {
   // Set current user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
 
-  navigate.navigate("Home");
+  navigate.navigate('Auth');
 };

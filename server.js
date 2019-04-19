@@ -31,8 +31,9 @@ require('./config/passport')(passport);
 app.use('/api/users',users);
 app.use('/api/profile',profile);
 app.use('/api/posts',posts);
-
+app.use('/static',express.static(__dirname + '/routes/api/uploads'));
+app.use('/static',express.static(__dirname + '/Strings/android/app/src/main/res/raw'));
 
 const port = process.env.PORT || 5000;
 
-app.listen(port,'192.168.0.5', () => console.log(`Server running on ${port}`));
+app.listen(port,'192.168.43.175', () => console.log(`Server running on ${port}`));

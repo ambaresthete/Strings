@@ -3,6 +3,12 @@ package com.strings;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.zmxv.RNSound.RNSoundPackage;
+import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
+import com.heanoria.library.reactnative.locationenabler.RNAndroidLocationEnablerPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -24,6 +30,12 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSoundPackage(),
+            new ReactNativeDocumentPicker(),
+            new RNAndroidLocationEnablerPackage(),
+            new MapsPackage(),
+            new ImagePickerPackage(),
+            new VectorIconsPackage(),
             new RNGestureHandlerPackage()
       );
     }
